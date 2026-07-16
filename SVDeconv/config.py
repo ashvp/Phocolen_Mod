@@ -11,7 +11,7 @@ from types import SimpleNamespace
 
 # Define FFT arguments once at the module level
 fft_args_dict = {
-    "psf_mat": Path("data/phlatcam/phase_psf/psf.npy"),
+    "psf_mat": Path("/home/interns/Ashwin/flatnet-gen/flatnet/data/phase_psf/psf.npy"),
     "psf_height": 1518,
     "psf_width": 2012,
     "psf_centre_x": 808,
@@ -46,7 +46,7 @@ def base_config():
     # Directories
     # ---------------------------------------------------------------------------- #
 
-    image_dir = Path("data/phlatcam")
+    image_dir = Path("/4tb_hdd/Ashwin/lenslessFlatnetEndoNeRF")
     output_dir = Path("output/phlatcam") / exp_name
     ckpt_dir = Path("ckpts/phlatcam") / exp_name
     run_dir = Path("runs/phlatcam") / exp_name  # Tensorboard
@@ -55,17 +55,20 @@ def base_config():
     # Data
     # ---------------------------------------------------------------------------- #
 
+    test_glob_pattern = "test_set_Jan/cap*.png"
+
     text_file_dir = image_dir / "text_files"
-    train_source_list = text_file_dir / "train_source_imagenet_384_384_Feb_19.txt"
+    train_source_list = text_file_dir / "train_source.txt"
     train_target_list = text_file_dir / "train_target.txt"
 
-    val_source_list = text_file_dir / "val_source_imagenet_384_384_Feb_19.txt"
+    val_source_list = text_file_dir / "val_source.txt"
     val_target_list = text_file_dir / "val_target.txt"
 
     test_skip_existing = True
     test_apply_gain = True
 
     dataset_name = "phlatcam" 
+    dataset = "phlatcam"
 
     shuffle = True
     train_gaussian_noise = 5e-3
@@ -154,16 +157,31 @@ def ours_meas_1280_1408_svd():
     load_raw = True
 
 
-def ours_meas_1280_1408_decoded_sim_svd():
+def ours_meas_1280_1408_decoded_sim_svd():                        
     exp_name = "fft-svd-1280-1408-meas-decoded_sim_spatial_weight"
-    train_target_list =  "data/phlatcam/text_files/decoded_sim_captures_train.txt"
-    val_target_list = "data/phlatcam/text_files/decoded_sim_captures_val.txt"
-    batch_size = 5
-    num_threads = 5
-    use_spatial_weight = True
-    multi = 9
-    load_raw = True
+    train_target_list = "/4tb_hdd/Ashwin/lenslessFlatnetEndoNeRF/text_files/decoded_sim_captures_train.txt"                                                     
+    val_target_list = "/4tb_hdd/Ashwin/lenslessFlatnetEndoNeRF/text_files/decoded_sim_captures_val.txt"                                                       
+    batch_size = 5                                                
+    num_threads = 5                                               
+    use_spatial_weight = True                                     
+    multi = 9                                                     
+    load_raw = True   
 
+    # Override crop/PSF dimensions to match simulated 1024x1280 RAW and 584x584 Perlin PSF
+    psf_mat = Path("/home/interns/Ashwin/flatnet-gen/flatnet/data/phase_psf/perlin_psf.npy")
+    psf_height = 584
+    psf_width = 584
+    psf_crop_size_x = 584
+    psf_crop_size_y = 584
+    psf_centre_x = 292
+    psf_centre_y = 292
+
+    meas_height = 1024
+    meas_width = 1280
+    meas_crop_size_x = 512
+    meas_crop_size_y = 512
+    meas_centre_x = 256
+    meas_centre_y = 320
 def load_ckpt():
     exp_name = "fft-svd-1280-1408-learn-1280-1408-meas-decoded_sim_spatial_weight"
 

@@ -1,7 +1,19 @@
 import argparse, os, sys, datetime, glob, importlib, csv
 import numpy as np
+# Patch NumPy 2.0+ compatibility for older libraries (like PyTorch Lightning)
+np.Inf = np.inf
+np.NaN = np.nan
+if not hasattr(np, "bool"):
+    np.bool = bool
+if not hasattr(np, "int"):
+    np.int = int
+if not hasattr(np, "float"):
+    np.float = float
 import time
 import torch
+# Patch torch.load for PyTorch 2.6+ compatibility with older checkpoints
+_orig_load = torch.load
+torch.load = lambda *args, **kwargs: _orig_load(*args, **{**kwargs, "weights_only": False}) if "weights_only" not in kwargs else _orig_load(*args, **kwargs)
 import torchvision
 import pytorch_lightning as pl
 

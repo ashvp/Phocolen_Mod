@@ -12,9 +12,7 @@ import sys
 from pathlib import Path
 # from waveprop.devices import  SensorParam
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-from models.fftlayer import FFTLayer
 from config import fft_args
-FFT = FFTLayer(fft_args)
 sensor = dict(size = np.array([4.8e-6 * 1518, 4.8e-6 * 2012]))
 
 
@@ -61,6 +59,8 @@ class DirectSensorFarFieldSimulator(FarFieldSimulator):
         self.sensor = sensor  # Direct assignment of the sensor dictionary
         self.random_shift = random_shift
         self.quantize = quantize
+        self.vertical_shift = None
+        self.horizontal_shift = None
 
         # Handle PSF and convolution setup
         if psf is not None:
@@ -120,7 +120,7 @@ def crop_and_padding(img, meas_crop_size_x=1280, meas_crop_size_y=1408, meas_cen
     return img
 
 
-def load_sim_save(simulator, obj_path, save_path):
+def load_sim_save(simulator, FFT, obj_path, save_path):
     # load object
     obj = cv2.imread(obj_path)
     # obj = cv2.normalize(obj, None, 0, 255, cv2.NORM_MINMAX)
@@ -155,6 +155,11 @@ if __name__ == "__main__":
     obj_path = args.obj_path
     save_path = args.save_path
 
+    # Dynamic import and initialization of FFTLayer to respect custom psf_path
+    from models.fftlayer import FFTLayer
+    fft_args.psf_mat = Path(psf_path)
+    FFT = FFTLayer(fft_args)
+
     # load psf
     psf = np.load(psf_path)
     # add last dimension
@@ -169,9 +174,9 @@ if __name__ == "__main__":
         obj_path_list = os.listdir(obj_path)
         obj_path_list = [os.path.join(obj_path, obj_path_i) for obj_path_i in obj_path_list]
         for obj_path_i in obj_path_list:
-            load_sim_save(simulator, obj_path_i, save_path)
+            load_sim_save(simulator, FFT, obj_path_i, save_path)
     else:
-        load_sim_save(simulator, obj_path, save_path)
+        load_sim_save(simulator, FFT, obj_path, save_path)
 
 # python tools/decode_and_sim_rgb.py --psf_path data/phase_psf/psf.npy --obj_path /root/caixin/StableSR/data/flatnet_val/gts --save_path /root/caixin/StableSR/data/flatnet_val/sim_captures
 # python tools/decode_and_sim_rgb.py --obj_path  data/flatnet/inputs/n01440764_457.png

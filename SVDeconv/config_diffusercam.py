@@ -14,7 +14,7 @@ from types import SimpleNamespace
 height = 270
 width = 480
 fft_args_dict = {
-    "psf_mat": Path("data/diffusercam/psf.tiff"),
+    "psf_mat": Path("/4tb_hdd/Ashwin/dataset/psf.tiff"),
     "psf_height": height,
     "psf_width": width,
     "psf_centre_x": height // 2,
@@ -33,6 +33,7 @@ fft_args_dict = {
     "fft_gamma": 100,  # Gamma for Weiner init
     "fft_requires_grad": False,
     "fft_epochs": 0,
+    "use_mask": False,
 }
 
 def base_config():
@@ -48,7 +49,7 @@ def base_config():
     # Directories
     # ---------------------------------------------------------------------------- #
 
-    image_dir = Path("data/diffusercam")
+    image_dir = Path("/4tb_hdd/Ashwin/dataset")
     output_dir = Path("output/diffusercam") / exp_name
     ckpt_dir = Path("ckpts/diffusercam") / exp_name
     run_dir = Path("runs/diffusercam") / exp_name  # Tensorboard
@@ -60,6 +61,7 @@ def base_config():
 
     shuffle = True
     train_gaussian_noise = 5e-3
+    decode_sim = False
 
     
     model = "UNet270480"
